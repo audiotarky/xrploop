@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Flask Payment Channel Demo</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+
+<body class="p-8">
+    <div class="m-1 flex flex-cols-2 flex-flow-col">
+        <div style="width:100px"><img src="{{ url_for('static', filename='logo.png') }}" width="100" /></div>
+        <div class="p-2">
+            <h1 class="text-2xl">Flask Payment Channel Demo</h1>
+            <p>This runs on Testnet, don't use a mainet account!</p>
+            <div id="loginButton">
+                <p class="m-2"><a href="login" class="text-white rounded-full bg-amber-600 py-1 px-4">Login with
+                        XUMM</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-2 grid-flow-col">
+        <div class="p-2 m-1 rounded-sm border-2">
+            <div id="info">
+                <h1 class="text-xl">Demo Channel Info</h1>
+                <p>Opening destination balance: {{balances["destination"]|float|round(1)}}</p>
+
+                <p>Opening source balance: {{balances.get("source", 0)|float|round(1)}}</p>
+                <p>Active channel: {{active_channel['channel_id'] }}</p>
+            </div>
+            <button onclick="stopWS()" class="text-white rounded-full bg-amber-600 py-1 px-4 m-2">Stop Paying</button>
+            {% if channels |length > 0 %}
+            <div id="existing">
+                <div class="relative overflow-x-auto">
+                    <table class="w-full rounded-sm border-2">
+                        <thead class="border-2">
+                            <tr>
+                                <td class="w-1/6 border-2 p-2">Channel ID</td>
+                                <td class="w-1/6 border-2 p-2">Max amount</td>
+                                <td class="w-1/6 border-2 p-2">Balance</td>
+                                <td class="w-1/6 border-2 p-2">Destination</td>
+                                <td class="w-1/6 border-2 p-2">Public Key</td>
+                                <td class="w-1/6 border-2 p-2">Expires</td>
+                            </tr>
+                        </thead>
+                        <!-- | sort(attribute="balance")| sort(attribute="cancel_after") --->
+                        {% for channel in channels %}
+                        <tr>
+                            <!--- {{channel}}-->
+                            {% if channel['channel_id'] == active_channel['channel_id'] %}
+                            <td class="w-1/6 overflow-clip p-2 border-2"><b>{{channel['channel_id']|truncate(9)}}</b>
+                            </td>
+                            {% else %}
+                            <td class="w-1/6 overflow-clip truncate p-2 border-2">
+                                <p>{{channel['channel_id']|truncate(9)}}</p>
+                            </td>
+                            {% endif %}
+                            <td class="w-1/6 p-2 border-2">{{drops_to_xrp(channel['amount'])|round(2)}}</td>
+                            <td class="w-1/6 p-2 border-2">{{drops_to_xrp(channel['balance'])|round(2)}}</td>
+                            <td class="w-1/6 p-2 border-2">{{channel['destination_account'][:10]}}...</td>
+                            <td class="w-1/6 p-2 border-2">{{channel['public_key'][:10]}}...</td>
+                            <td class="w-1/6 p-2 border-2">{{ripple_time_to_datetime(channel['cancel_after'])}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div id="create"></div>
+            {% else %}
+            {% if xumm_socket %}
+            <div id="create">
+                <h1 class="text-xl">>Create Payment Channel</h1>
+                <a href="{{ xumm_socket['next']['always'] }}"><img src="{{ xumm_socket['refs']['qr_png'] }}" /></a>
+            </div>
+            {% endif %}
+            {% endif %}
+
+        </div>
+        <div class="p-2 m-1 rounded-sm border-2 row-span-2 h-full">
+            <h1 class="text-xl">Payment Log</h1>
+            <div class="overflow-scroll h-full" id="log"></div>
+        </div>
+    </div>
+
+</body>
+<script src="{{ url_for('static', filename='payments.js') }}"></script>
+
+</html>
