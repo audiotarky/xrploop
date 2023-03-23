@@ -11,10 +11,11 @@ from flask import (
     jsonify,
     url_for,
     redirect,
+    request,
     session,
     make_response,
 )
-import requests
+
 from flask_sock import Sock
 from functools import cache
 from requests.exceptions import HTTPError
@@ -272,6 +273,9 @@ def record(sock):
 def index(path=0):
     xrpl_client.open()
     source = session.get("info", {}).get("wallet_address", None)
+    if not source:
+        source = request.cookies.get("wallet_address", None)
+        session["info"] = {"wallet_address": source}
     channel_list = []
     balances = {"destination": xrp_str_balance(destination)}
     active_channel = None
@@ -295,7 +299,6 @@ def index(path=0):
             active_channel = channel_list[0]
         else:
             active_channel = None
-        app.logger.info(session["info"])
     response = make_response(
         render_template(
             "index.html",

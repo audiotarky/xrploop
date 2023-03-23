@@ -44,8 +44,10 @@ function stopWS() {
 }
 
 function showQR() {
-    document.getElementById('info').innerHTML = `<h1 class="text-xl">Create Payment Channel</h1>`;
-    document.getElementById('info').innerHTML += `<a href="${allCookies.xumm_next}"><img src="${allCookies.xumm_png}" /></a>`;
+    if (allCookies.xumm_next && allCookies.xumm_png) {
+        document.getElementById('info').innerHTML = `<h1 class="text-xl">Create Payment Channel</h1>`;
+        document.getElementById('info').innerHTML += `<a href="${allCookies.xumm_next}"><img src="${allCookies.xumm_png}" /></a>`;
+    }
 }
 
 
@@ -66,7 +68,9 @@ function payMe(timeout = 5000) {
         }
     }
 }
+
 console.log(activeChannel)
+
 if (activeChannel !== null) {
     payMe();
 } else {
