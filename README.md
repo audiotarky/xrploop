@@ -1,5 +1,6 @@
 # XRPLoop
-![XRPLoop](static/logo.png "XRPLoop")
+
+![XRPLoop](branding/Default/PNG/Yellow/1000x/XRPLoop-Logo-Yellow1000.png "XRPLoop")
 ## About
 The end of Coil left a hole in the WebMonetization and by extension the XRP communities. XRPLoop aims to allow XRP enabled services to recieve streamed micropayments from users with an XRP wallet.
 
